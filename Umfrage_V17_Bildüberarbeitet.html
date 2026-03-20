@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informationsgewinnung im Leben</title>
+
+  <style>
+    :root {
+      --bg-1: #eef3ff;
+      --bg-2: #f8fbff;
+      --card: rgba(255, 255, 255, 0.96);
+      --card-strong: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --line: #e5eaf2;
+      --primary: #2563eb;
+      --primary-soft: #e8f0ff;
+      --primary-dark: #1d4ed8;
+      --error: #d97706;
+      --error-soft: #fff7ed;
+      --shadow: 0 12px 32px rgba(37, 99, 235, 0.08);
+      --radius-xl: 20px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 18px 60px;
+      font-family: Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 35%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    }
+
+    .page-wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    /* =========================
+       Sticky Progress Bar
+       ========================= */
+    .progress-sticky {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      margin-bottom: 18px;
+    }
+
+    .progress-shell {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 8px 24px rgba(31, 41, 55, 0.08);
+      border-radius: 999px;
+      padding: 10px 14px;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      gap: 10px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: #dbe7ff;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--primary), #60a5fa);
+      transition: width 0.35s ease;
+    }
+
+    .container {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+      padding: 30px;
+    }
+
+    /* =========================
+       Header / Intro
+       ========================= */
+    .hero-header {
+      position: relative;
+      margin-bottom: 28px;
+      padding: 40px 34px;
+      border-radius: 24px;
+      border: 1px solid #d8dcff;
+      overflow: hidden;
+      background:
+        linear-gradient(rgba(241, 239, 255, 0.72), rgba(241, 239, 255, 0.72)),
+        url("bilder/IW_Weg.png") right 18px center / 400px no-repeat,
+        linear-gradient(135deg, #eceeff, #f4f0ff);
+    }
+
+    .hero-header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        rgba(244, 240, 255, 0.78) 0%,
+        rgba(244, 240, 255, 0.62) 34%,
+        rgba(244, 240, 255, 0.18) 100%
+      );
+      pointer-events: none;
+    }
+
+    .hero-text {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 78%;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: 34px;
+      line-height: 1.12;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: #4b5f7e;
+      line-height: 1.6;
+      margin: 0 auto 14px;
+      font-size: 16px;
+      max-width: 700px;
+      text-align: center;
+    }
+
+    .privacy-note {
+      color: #60708d;
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .required-hint {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 12px;
+      line-height: 1.4;
+    }
+
+    /* =========================
+       Questions
+       ========================= */
+    .question {
+      background: var(--card-strong);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.03);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .question h3 {
+      margin: 0 0 14px;
+      font-size: 20px;
+      line-height: 1.35;
+      color: #111827;
+    }
+
+    .question-subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .required {
+      color: #dc2626;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* =========================
+       Fehlerzustand
+       ========================= */
+    .question-error {
+      border-color: #f2b56d;
+      background: linear-gradient(135deg, #fff7ed, #fff3e8);
+      box-shadow: 0 8px 22px rgba(217, 119, 6, 0.12);
+    }
+
+    .question-error h3 {
+      color: #b45309;
+    }
+
+    .question-error .stacked-option,
+    .question-error .choice-card,
+    .question-error .icon-card,
+    .question-error .range-track-box,
+    .question-error .select-wrap select {
+      border-color: #f2b56d !important;
+      background: #fffaf4;
+    }
+
+    .question-error .stacked-option:has(input:checked) {
+      background: #ffe9cc;
+      border-color: #e89b3a !important;
+    }
+
+    .error-note {
+      color: #b45309;
+      font-size: 14px;
+      margin-top: 12px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .input-highlight {
+      outline: 2px solid #f4b267;
+      outline-offset: 2px;
+      border-radius: 12px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    /* =========================
+       Frage 1: Choice Cards
+       ========================= */
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .choice-option input {
+      display: none;
+    }
+
+    .choice-card {
+      width: 100%;
+      min-height: 92px;
+      border: 1.5px solid #d9e2f0;
+      background: #fbfdff;
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.22s ease;
+    }
+
+    .choice-card:hover {
+      border-color: #b8cdf7;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.06);
+    }
+
+    .choice-title {
+      font-weight: 700;
+      color: #111827;
+      font-size: 16px;
+    }
+
+    .choice-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .choice-option input:checked + .choice-card {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
+    }
+
+    /* =========================
+       Frage 2: Icon Grid
+       ========================= */
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .icon-option input {
+      display: none;
+    }
+
+    .icon-card {
+      min-height: 132px;
+      border-radius: 18px;
+      border: 1.5px solid #d9e2f0;
+      background: #fbfdff;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.22s ease;
+    }
+
+    .icon-card:hover {
+      border-color: #b8cdf7;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(37, 99, 235, 0.06);
+    }
+
+    .icon-emoji {
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .icon-label {
+      font-size: 14px;
+      line-height: 1.35;
+      color: #111827;
+      font-weight: 600;
+    }
+
+    .icon-option input:checked + .icon-card {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
+    }
+
+    /* =========================
+       Stacked Options
+       ========================= */
+    .stacked-options {
+      display: grid;
+      gap: 10px;
+    }
+
+    .stacked-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid #dbe3ef;
+      border-radius: 14px;
+      background: #fbfdff;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .stacked-option:hover {
+      border-color: #b8cdf7;
+      background: #f8fbff;
+    }
+
+    .stacked-option input {
+      accent-color: var(--primary);
+      transform: scale(1.1);
+      margin: 0;
+    }
+
+    .stacked-option:has(input:checked) {
+      background: var(--primary-soft);
+      border-color: var(--primary);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.08);
+    }
+
+    /* =========================
+       Moderne Select-Box
+       ========================= */
+    .select-wrap {
+      position: relative;
+    }
+
+    .select-wrap select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      border: 1.5px solid #dbe3ef;
+      background: #fbfdff;
+      color: #111827;
+      border-radius: 16px;
+      padding: 15px 52px 15px 16px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .select-wrap select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+    }
+
+    .select-wrap::after {
+      content: "⌄";
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-55%);
+      font-size: 22px;
+      color: #64748b;
+      pointer-events: none;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      border: 1.5px solid #dbe3ef;
+      background: #fbfdff;
+      border-radius: 14px;
+      padding: 14px 15px;
+      font-size: 15px;
+      outline: none;
+      margin-top: 12px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+    }
+
+    /* =========================
+       Slider
+       ========================= */
+    .range-wrap {
+      margin-top: 8px;
+    }
+
+    .range-track-box {
+      background: #fbfdff;
+      border: 1px solid #dbe3ef;
+      border-radius: 18px;
+      padding: 18px 18px 14px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      margin: 6px 0 12px;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 10px;
+      background: linear-gradient(90deg, #d9e8ff, #e6f0ff);
+      border-radius: 999px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 34px;
+      height: 18px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary), #60a5fa);
+      border: 2px solid #ffffff;
+      box-shadow: 0 6px 14px rgba(37, 99, 235, 0.22);
+      margin-top: -4px;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 10px;
+      background: linear-gradient(90deg, #d9e8ff, #e6f0ff);
+      border-radius: 999px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 34px;
+      height: 18px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary), #60a5fa);
+      border: 2px solid #ffffff;
+      box-shadow: 0 6px 14px rgba(37, 99, 235, 0.22);
+      cursor: pointer;
+    }
+
+    .scale-labels {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .range-placeholder {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .range-value-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* =========================
+       Button
+       ========================= */
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 16px;
+      padding: 16px 18px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--primary), #3b82f6);
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      margin-top: 8px;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+    }
+
+    button:disabled {
+      opacity: 0.72;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* =========================
+       Thank you
+       ========================= */
+    .thank-you-box {
+      text-align: center;
+      padding: 70px 28px;
+      background: linear-gradient(135deg, #eceeff, #f4f0ff);
+      border: 1px solid #d8dcff;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .thank-you-illustration {
+      width: 220px;
+      max-width: 70%;
+      height: auto;
+      margin: 18px auto 20px;
+      display: block;
+      opacity: 0.95;
+    }
+
+    .thank-you-box h2 {
+      margin: 0 0 12px;
+      font-size: 30px;
+      color: #0f172a;
+    }
+
+    .thank-you-box p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    /* =========================
+       Animation
+       ========================= */
+    .fade-in {
+      animation: fadeInUp 0.28s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* =========================
+       Responsive
+       ========================= */
+    @media (max-width: 900px) {
+      .icon-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 18px 12px 40px;
+      }
+
+      .container {
+        padding: 20px;
+        border-radius: 18px;
+      }
+
+      .hero-header {
+        padding: 24px 20px;
+        background:
+          linear-gradient(rgba(241, 239, 255, 0.80), rgba(241, 239, 255, 0.80)),
+          url("bilder/IW_Weg.png") right -6px bottom 8px / 250px no-repeat,
+          linear-gradient(135deg, #eceeff, #f4f0ff);
+      }
+
+      .hero-header::before {
+        background: linear-gradient(
+          to right,
+          rgba(244, 240, 255, 0.84) 0%,
+          rgba(244, 240, 255, 0.70) 50%,
+          rgba(244, 240, 255, 0.36) 100%
+        );
+      }
+
+      .hero-text {
+        max-width: 100%;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 27px;
+      }
+
+      .subtitle {
+        font-size: 15px;
+        max-width: none;
+      }
+
+      .privacy-note {
+        font-size: 13px;
+      }
+
+      .question {
+        padding: 18px;
+      }
+
+      .question h3 {
+        font-size: 18px;
+      }
+
+      .choice-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .icon-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .icon-card {
+        min-height: 118px;
+      }
+
+      .scale-labels {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+
+      .thank-you-box {
+        padding: 44px 20px;
+      }
+
+      .thank-you-box h2 {
+        font-size: 24px;
+      }
+
+      .thank-you-illustration {
+        width: 180px;
+        max-width: 75%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .icon-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .icon-card {
+        padding: 14px 10px;
+      }
+
+      .icon-emoji {
+        font-size: 26px;
+      }
+
+      .icon-label {
+        font-size: 13px;
+      }
+
+      .choice-card {
+        min-height: 84px;
+      }
+
+      .question {
+        padding: 16px;
+      }
+
+      .hero-header {
+        padding: 20px 16px;
+        background:
+          linear-gradient(rgba(241, 239, 255, 0.84), rgba(241, 239, 255, 0.84)),
+          url("bilder/IW_Weg.png") right -18px bottom 6px / 190px no-repeat,
+          linear-gradient(135deg, #eceeff, #f4f0ff);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrap">
+    <div class="progress-sticky" id="progressSticky">
+      <div class="progress-shell">
+        <div class="progress-meta">
+          <span>Fortschritt</span>
+          <span id="progressText">0% abgeschlossen</span>
+        </div>
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="surveyContent">
+        <div class="hero-header">
+          <div class="hero-text">
+            <h1>Informationsgewinnung im Leben</h1>
+            <p class="subtitle">
+              Wie suchen, speichern und nutzen Personen Informationen im Studium, in der Arbeit und im Alltag?
+            </p>
+            <p class="privacy-note">
+              Die Teilnahme ist freiwillig. Es werden keine personenbezogenen Daten erhoben.
+            </p>
+          </div>
+        </div>
+
+        <form id="surveyForm">
+          <div class="question" id="question-kontext">
+            <h3>1. In welchem Kontext suchst du am häufigsten Informationen? <span class="required">*</span></h3>
+            <div class="choice-grid">
+              <label class="choice-option">
+                <input type="radio" name="kontext" value="Studium">
+                <span class="choice-card">
+                  <span class="choice-title">🎓 Studium</span>
+                  <span class="choice-desc">Lernen, Vorlesungen, Hausarbeiten, Prüfungen</span>
+                </span>
+              </label>
+
+              <label class="choice-option">
+                <input type="radio" name="kontext" value="Arbeit / Nebenjob">
+                <span class="choice-card">
+                  <span class="choice-title">💼 Arbeit / Nebenjob</span>
+                  <span class="choice-desc">Berufliche Aufgaben, Recherche im Job</span>
+                </span>
+              </label>
+
+              <label class="choice-option">
+                <input type="radio" name="kontext" value="Alltag / persönliche Interessen">
+                <span class="choice-card">
+                  <span class="choice-title">🌍 Alltag</span>
+                  <span class="choice-desc">Private Themen, spontane Informationssuche</span>
+                </span>
+              </label>
+
+              <label class="choice-option">
+                <input type="radio" name="kontext" value="Ungefähr gleich häufig in allen Bereichen">
+                <span class="choice-card">
+                  <span class="choice-title">⚖️ Alle Bereiche</span>
+                  <span class="choice-desc">Studium, Alltag und Arbeit ähnlich häufig</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="question" id="question-quellen">
+            <h3>2. Welche Quellen nutzt du am häufigsten, wenn du Informationen suchst? <span class="required">*</span></h3>
+            <p class="question-subtitle">Mehrfachauswahl möglich</p>
+
+            <div class="icon-grid">
+              <label class="icon-option">
+                <input type="checkbox" name="quellen" value="Suchmaschinen">
+                <span class="icon-card">
+                  <span class="icon-emoji">🔎</span>
+                  <span class="icon-label">Suchmaschinen</span>
+                </span>
+              </label>
+
+              <label class="icon-option">
+                <input type="checkbox" name="quellen" value="Wissenschaftliche Datenbanken">
+                <span class="icon-card">
+                  <span class="icon-emoji">🎓</span>
+                  <span class="icon-label">Wissenschaftliche<br>Datenbanken</span>
+                </span>
+              </label>
+
+              <label class="icon-option">
+                <input type="checkbox" id="kiToolsCheckbox" name="quellen" value="KI-Tools">
+                <span class="icon-card">
+                  <span class="icon-emoji">🤖</span>
+                  <span class="icon-label">KI-Tools</span>
+                </span>
+              </label>
+
+              <label class="icon-option">
+                <input type="checkbox" name="quellen" value="Bücher / Skripte">
+                <span class="icon-card">
+                  <span class="icon-emoji">📚</span>
+                  <span class="icon-label">Bücher / Skripte</span>
+                </span>
+              </label>
+
+              <label class="icon-option">
+                <input type="checkbox" name="quellen" value="Freunde / Kommilitonen / Kollegen">
+                <span class="icon-card">
+                  <span class="icon-emoji">👥</span>
+                  <span class="icon-label">Freunde / Kollegen</span>
+                </span>
+              </label>
+
+              <label class="icon-option">
+                <input type="checkbox" name="quellen" value="Experten / Interviews">
+                <span class="icon-card">
+                  <span class="icon-emoji">🎤</span>
+                  <span class="icon-label">Experten / Interviews</span>
+                </span>
+              </label>
+
+              <label class="icon-option">
+                <input type="checkbox" name="quellen" value="Social Media">
+                <span class="icon-card">
+                  <span class="icon-emoji">📱</span>
+                  <span class="icon-label">Social Media</span>
+                </span>
+              </label>
+
+              <label class="icon-option">
+                <input type="checkbox" name="quellen" value="Foren / Online-Communities">
+                <span class="icon-card">
+                  <span class="icon-emoji">💬</span>
+                  <span class="icon-label">Foren / Communities</span>
+                </span>
+              </label>
+            </div>
+
+            <p class="note">Bitte mindestens eine Quelle auswählen.</p>
+          </div>
+
+          <div class="question hidden" id="kiFollowUp">
+            <h3>2a. Für welche Aufgaben nutzt du KI hauptsächlich? <span class="required">*</span></h3>
+            <div class="stacked-options">
+              <label class="stacked-option"><input type="radio" name="kiNutzung" value="Zusammenfassungen"> Zusammenfassungen</label>
+              <label class="stacked-option"><input type="radio" name="kiNutzung" value="Ideenfindung"> Ideenfindung</label>
+              <label class="stacked-option"><input type="radio" name="kiNutzung" value="Programmierung"> Programmierung</label>
+              <label class="stacked-option"><input type="radio" name="kiNutzung" value="Verständnis schwieriger Themen"> Verständnis schwieriger Themen</label>
+              <label class="stacked-option"><input type="radio" name="kiNutzung" value="Sonstiges"> Sonstiges</label>
+            </div>
+          </div>
+
+          <div class="question" id="question-organisation">
+            <h3>3. Wie organisierst du wichtige Informationen? <span class="required">*</span></h3>
+            <div class="select-wrap">
+              <select id="organisation" name="organisation">
+                <option value="">Bitte auswählen</option>
+                <option value="Notizen auf Papier">Notizen auf Papier</option>
+                <option value="Digitale Notizen">Digitale Notizen (z. B. OneNote, Notion)</option>
+                <option value="Screenshots / Dateien sammeln">Screenshots / Dateien sammeln</option>
+                <option value="Gar keine feste Struktur">Gar keine feste Struktur</option>
+                <option value="Andere Methode">Andere Methode</option>
+              </select>
+            </div>
+
+            <div id="andereMethodeContainer" class="hidden fade-in">
+              <input type="text" id="andereMethodeText" name="andereMethodeText" placeholder="Bitte beschreibe deine andere Methode">
+            </div>
+          </div>
+
+          <div class="question" id="question-pruefkriterien">
+            <h3>4. Worauf achtest du, wenn du Informationen überprüfst? <span class="required">*</span></h3>
+            <p class="question-subtitle">Mehrfachauswahl möglich</p>
+            <div class="stacked-options">
+              <label class="stacked-option"><input type="checkbox" name="pruefkriterien" value="Aktualität"> Aktualität</label>
+              <label class="stacked-option"><input type="checkbox" name="pruefkriterien" value="Vertrauenswürdigkeit der Quelle"> Vertrauenswürdigkeit der Quelle</label>
+              <label class="stacked-option"><input type="checkbox" name="pruefkriterien" value="Zugänglichkeit / Nachvollziehbarkeit"> Zugänglichkeit / Nachvollziehbarkeit</label>
+              <label class="stacked-option"><input type="checkbox" name="pruefkriterien" value="Art der Information"> Art der Information</label>
+              <label class="stacked-option"><input type="checkbox" name="pruefkriterien" value="Vergleich mit anderen Quellen"> Vergleich mit anderen Quellen</label>
+            </div>
+          </div>
+
+          <div class="question" id="question-pruefung">
+            <h3>5. Wie stark überprüfst du Informationen, die du findest? <span class="required">*</span></h3>
+            <div class="range-wrap">
+              <div class="range-track-box">
+                <input type="range" id="pruefung" name="pruefung" min="1" max="5" value="3">
+                <div class="scale-labels">
+                  <span>1 = gar nicht</span>
+                  <span>2 = selten</span>
+                  <span>3 = manchmal</span>
+                  <span>4 = oft</span>
+                  <span>5 = immer</span>
+                </div>
+
+                <p id="rangePlaceholder" class="range-placeholder">
+                  Wähle aktiv einen Wert aus, auch wenn du bei 3 bleiben möchtest.
+                </p>
+
+                <div id="rangeValueBadge" class="range-value-badge hidden">
+                  <span>Aktueller Wert:</span>
+                  <span id="rangeValue">3</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="question hidden" id="studiumFollowUp">
+            <h3>6. Welche Informationsquellen nutzt du speziell im Studium? <span class="required">*</span></h3>
+            <div class="stacked-options">
+              <label class="stacked-option"><input type="checkbox" name="studiumQuellen" value="Wissenschaftliche Artikel"> Wissenschaftliche Artikel</label>
+              <label class="stacked-option"><input type="checkbox" name="studiumQuellen" value="Vorlesungsunterlagen"> Vorlesungsunterlagen</label>
+              <label class="stacked-option"><input type="checkbox" name="studiumQuellen" value="KI"> KI</label>
+              <label class="stacked-option"><input type="checkbox" name="studiumQuellen" value="Online-Videos"> Online-Videos</label>
+              <label class="stacked-option"><input type="checkbox" name="studiumQuellen" value="Kommilitonen"> Kommilitonen</label>
+            </div>
+          </div>
+
+          <div class="question hidden" id="alltagFollowUp">
+            <h3>6. Wo informierst du dich im Alltag am häufigsten? <span class="required">*</span></h3>
+            <div class="stacked-options">
+              <label class="stacked-option"><input type="radio" name="alltagQuelle" value="Google"> Google</label>
+              <label class="stacked-option"><input type="radio" name="alltagQuelle" value="Social Media"> Social Media</label>
+              <label class="stacked-option"><input type="radio" name="alltagQuelle" value="Nachrichtenportale"> Nachrichtenportale</label>
+              <label class="stacked-option"><input type="radio" name="alltagQuelle" value="Freunde / Familie"> Freunde / Familie</label>
+            </div>
+          </div>
+
+          <button type="submit" id="submitButton">Umfrage absenden</button>
+        </form>
+
+        <p class="required-hint">* Pflichtfelder</p>
+      </div>
+
+      <div id="thankYouMessage" class="hidden">
+        <div class="thankYouBox thank-you-box">
+          <h2>Vielen Dank für deine Teilnahme!</h2>
+          <img src="bilder/IW_Weg.png" alt="Illustration" class="thank-you-illustration">
+          <p>Deine Antworten wurden erfolgreich übermittelt.</p>
+          <p>Deine Unterstützung hilft uns sehr bei unserem Projekt im Fach Informationsgewinnung und Wissensmanagement.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyuSfvp2b5vGRI9QfKMRhEQS530xMjlaxvPh9STJvdRUTOiCKLEBdmynwt5BZ4PkDYBLA/exec";
+
+    const progressSticky = document.getElementById("progressSticky");
+    const surveyContent = document.getElementById("surveyContent");
+    const form = document.getElementById("surveyForm");
+    const submitButton = document.getElementById("submitButton");
+    const thankYouMessage = document.getElementById("thankYouMessage");
+
+    const progressFill = document.getElementById("progressFill");
+    const progressText = document.getElementById("progressText");
+
+    const kiToolsCheckbox = document.getElementById("kiToolsCheckbox");
+    const kiFollowUp = document.getElementById("kiFollowUp");
+
+    const organisation = document.getElementById("organisation");
+    const andereMethodeContainer = document.getElementById("andereMethodeContainer");
+    const andereMethodeText = document.getElementById("andereMethodeText");
+
+    const kontextRadios = document.querySelectorAll('input[name="kontext"]');
+    const studiumFollowUp = document.getElementById("studiumFollowUp");
+    const alltagFollowUp = document.getElementById("alltagFollowUp");
+
+    const pruefungRange = document.getElementById("pruefung");
+    const rangeValue = document.getElementById("rangeValue");
+    const rangeValueBadge = document.getElementById("rangeValueBadge");
+    const rangePlaceholder = document.getElementById("rangePlaceholder");
+
+    const questionKontext = document.getElementById("question-kontext");
+    const questionQuellen = document.getElementById("question-quellen");
+    const questionOrganisation = document.getElementById("question-organisation");
+    const questionPruefkriterien = document.getElementById("question-pruefkriterien");
+    const questionPruefung = document.getElementById("question-pruefung");
+
+    let sliderTouched = false;
+    let hasTriedSubmit = false;
+
+    function isVisible(element) {
+      return !element.classList.contains("hidden");
+    }
+
+    function clearErrors() {
+      document.querySelectorAll(".question").forEach(question => {
+        question.classList.remove("question-error");
+
+        const oldNote = question.querySelector(".error-note");
+        if (oldNote) {
+          oldNote.remove();
+        }
+
+        question.querySelectorAll(".input-highlight").forEach(input => {
+          input.classList.remove("input-highlight");
+        });
+      });
+    }
+
+    function markQuestionError(questionElement, message) {
+      if (!questionElement) return;
+
+      questionElement.classList.add("question-error");
+
+      if (!questionElement.querySelector(".error-note")) {
+        const note = document.createElement("p");
+        note.className = "error-note";
+        note.textContent = message;
+        questionElement.appendChild(note);
+      }
+
+      const firstVisibleInput = Array.from(
+        questionElement.querySelectorAll("input, select")
+      ).find(el => el.offsetParent !== null);
+
+      if (firstVisibleInput) {
+        firstVisibleInput.classList.add("input-highlight");
+      }
+    }
+
+    function scrollToQuestion(questionElement) {
+      if (!questionElement) return;
+
+      questionElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+
+    function activateSlider() {
+      if (!sliderTouched) {
+        sliderTouched = true;
+        rangePlaceholder.classList.add("hidden");
+        rangeValueBadge.classList.remove("hidden");
+      }
+
+      rangeValue.textContent = pruefungRange.value;
+      updateProgress();
+    }
+
+    function getVisibleValidationTargets() {
+      return [
+        {
+          element: questionKontext,
+          valid: () => !!document.querySelector('input[name="kontext"]:checked'),
+          message: "Bitte beantworte diese Frage."
+        },
+        {
+          element: questionQuellen,
+          valid: () => document.querySelectorAll('input[name="quellen"]:checked').length > 0,
+          message: "Bitte wähle mindestens eine Informationsquelle aus."
+        },
+        {
+          element: kiFollowUp,
+          visible: () => isVisible(kiFollowUp),
+          valid: () => !!document.querySelector('input[name="kiNutzung"]:checked'),
+          message: "Bitte gib an, wofür du KI hauptsächlich nutzt."
+        },
+        {
+          element: questionOrganisation,
+          valid: () => {
+            if (!organisation.value) return false;
+            if (organisation.value === "Andere Methode") {
+              return andereMethodeText.value.trim() !== "";
+            }
+            return true;
+          },
+          message: organisation.value === "Andere Methode"
+            ? "Bitte beschreibe deine andere Methode."
+            : "Bitte wähle eine Antwort aus."
+        },
+        {
+          element: questionPruefkriterien,
+          valid: () => document.querySelectorAll('input[name="pruefkriterien"]:checked').length > 0,
+          message: "Bitte wähle mindestens ein Prüfkriterium aus."
+        },
+        {
+          element: questionPruefung,
+          valid: () => sliderTouched,
+          message: "Bitte wähle aktiv einen Wert aus."
+        },
+        {
+          element: studiumFollowUp,
+          visible: () => isVisible(studiumFollowUp),
+          valid: () => document.querySelectorAll('input[name="studiumQuellen"]:checked').length > 0,
+          message: "Bitte wähle mindestens eine Informationsquelle für das Studium aus."
+        },
+        {
+          element: alltagFollowUp,
+          visible: () => isVisible(alltagFollowUp),
+          valid: () => !!document.querySelector('input[name="alltagQuelle"]:checked'),
+          message: "Bitte wähle eine Quelle für den Alltag aus."
+        }
+      ].filter(target => target.visible ? target.visible() : true);
+    }
+
+    function getInvalidVisibleQuestions() {
+      return getVisibleValidationTargets().filter(target => !target.valid());
+    }
+
+    function updateProgress() {
+      const visibleQuestions = getVisibleValidationTargets();
+      const total = visibleQuestions.length;
+      const answered = visibleQuestions.filter(q => q.valid()).length;
+      const percentage = total === 0 ? 0 : Math.round((answered / total) * 100);
+
+      progressFill.style.width = percentage + "%";
+      progressText.textContent = percentage + "% abgeschlossen";
+    }
+
+    function validateVisibleQuestions() {
+      clearErrors();
+
+      const invalidTargets = getInvalidVisibleQuestions();
+
+      invalidTargets.forEach(target => {
+        markQuestionError(target.element, target.message);
+      });
+
+      if (invalidTargets.length > 0) {
+        scrollToQuestion(invalidTargets[0].element);
+        return false;
+      }
+
+      return true;
+    }
+
+    function handleFieldUpdate() {
+      updateProgress();
+
+      if (!hasTriedSubmit) {
+        return;
+      }
+
+      const invalidTargets = getInvalidVisibleQuestions();
+
+      clearErrors();
+      invalidTargets.forEach(target => {
+        markQuestionError(target.element, target.message);
+      });
+
+      if (invalidTargets.length > 0) {
+        const activeElement = document.activeElement;
+        const activeQuestion = activeElement ? activeElement.closest(".question") : null;
+        const firstInvalid = invalidTargets[0].element;
+
+        if (!activeQuestion || activeQuestion !== firstInvalid) {
+          scrollToQuestion(firstInvalid);
+        }
+      }
+    }
+
+    kiToolsCheckbox.addEventListener("change", function () {
+      const kiNutzungRadios = document.querySelectorAll('input[name="kiNutzung"]');
+
+      if (kiToolsCheckbox.checked) {
+        kiFollowUp.classList.remove("hidden");
+        kiFollowUp.classList.add("fade-in");
+        kiNutzungRadios.forEach(radio => {
+          radio.required = true;
+        });
+      } else {
+        kiFollowUp.classList.add("hidden");
+        kiNutzungRadios.forEach(radio => {
+          radio.checked = false;
+          radio.required = false;
+        });
+      }
+
+      handleFieldUpdate();
+    });
+
+    organisation.addEventListener("change", function () {
+      if (organisation.value === "Andere Methode") {
+        andereMethodeContainer.classList.remove("hidden");
+        andereMethodeContainer.classList.add("fade-in");
+      } else {
+        andereMethodeContainer.classList.add("hidden");
+        andereMethodeText.value = "";
+      }
+
+      handleFieldUpdate();
+    });
+
+    kontextRadios.forEach(radio => {
+      radio.addEventListener("change", function () {
+        studiumFollowUp.classList.add("hidden");
+        alltagFollowUp.classList.add("hidden");
+
+        document.querySelectorAll('input[name="studiumQuellen"]').forEach(cb => {
+          cb.checked = false;
+        });
+
+        document.querySelectorAll('input[name="alltagQuelle"]').forEach(rb => {
+          rb.checked = false;
+        });
+
+        if (this.value === "Studium") {
+          studiumFollowUp.classList.remove("hidden");
+          studiumFollowUp.classList.add("fade-in");
+        } else if (this.value === "Alltag / persönliche Interessen") {
+          alltagFollowUp.classList.remove("hidden");
+          alltagFollowUp.classList.add("fade-in");
+        }
+
+        handleFieldUpdate();
+      });
+    });
+
+    ["input", "change", "mousedown", "touchstart", "keydown", "click"].forEach(eventName => {
+      pruefungRange.addEventListener(eventName, () => {
+        activateSlider();
+        handleFieldUpdate();
+      });
+    });
+
+    document.querySelectorAll("input, select").forEach(element => {
+      element.addEventListener("change", handleFieldUpdate);
+    });
+
+    andereMethodeText.addEventListener("input", handleFieldUpdate);
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      if (submitButton.disabled) {
+        return;
+      }
+
+      hasTriedSubmit = true;
+
+      const isValid = validateVisibleQuestions();
+      if (!isValid) {
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Wird gesendet...";
+
+      const formData = new URLSearchParams();
+      formData.append("kontext", document.querySelector('input[name="kontext"]:checked')?.value || "");
+      formData.append("quellen", Array.from(document.querySelectorAll('input[name="quellen"]:checked')).map(el => el.value).join(", "));
+      formData.append("kiNutzung", document.querySelector('input[name="kiNutzung"]:checked')?.value || "");
+      formData.append("organisation", organisation.value);
+      formData.append("andereMethode", andereMethodeText.value);
+      formData.append("pruefkriterien", Array.from(document.querySelectorAll('input[name="pruefkriterien"]:checked')).map(el => el.value).join(", "));
+      formData.append("pruefung", pruefungRange.value);
+      formData.append("studiumQuellen", Array.from(document.querySelectorAll('input[name="studiumQuellen"]:checked')).map(el => el.value).join(", "));
+      formData.append("alltagQuelle", document.querySelector('input[name="alltagQuelle"]:checked')?.value || "");
+
+      try {
+        const response = await fetch(WEBAPP_URL, {
+          method: "POST",
+          body: formData
+        });
+
+        const text = await response.text();
+        console.log("Serverantwort:", text);
+
+        progressSticky.style.display = "none";
+        surveyContent.style.display = "none";
+        thankYouMessage.classList.remove("hidden");
+      } catch (error) {
+        console.error("Fehler beim Senden:", error);
+        alert("Beim Absenden ist ein Fehler aufgetreten. Prüfe bitte, ob die Web-App neu bereitgestellt wurde.");
+
+        submitButton.disabled = false;
+        submitButton.textContent = "Umfrage absenden";
+      }
+    });
+
+    updateProgress();
+  </script>
+</body>
+</html>
